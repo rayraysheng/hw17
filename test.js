@@ -1,13 +1,9 @@
-// Creating our initial map object
-// We set the longitude, latitude, and the starting zoom level
-// This gets inserted into the div with an id of 'map'
+
 var myMap = L.map('map', {
   center: [37.09, -95.71],
   zoom: 5,
 });
 
-// Adding a tile layer (the background map image) to our map
-// We use the addTo method to add objects to our map
 var baseLayer = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/outdoors-v10/tiles/256/{z}/{x}/{y}?" +
     "access_token=pk.eyJ1IjoicmF5c2hlbmciLCJhIjoiY2pldm9ybDBrMHpjNjJxczh2dWE5NzhnNSJ9.LK-z4Vs0pl0VnZ-01C6YGQ");
 
@@ -16,8 +12,6 @@ baseLayer.addTo(myMap);
 var queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
 
 d3.json(queryUrl, function(response){
-
-	console.log(response.features[0]);
 
 	var quakeLayer = new L.layerGroup();
 
@@ -67,12 +61,20 @@ d3.json(faultLineUrl, function(response){
 	console.log(response)
 
 	var faultLayer = new L.GeoJSON();
-	for (var i = 0; i < response.length; i++){
+	for (var i = 0; i < response.features.length; i++){
 		var faultFeature = response.features[i];
 
-		faultLayer.addData(faultFeature);
+		var line = [
+			faultFeature.geometry.coordinates.reverse
+		];
+
+		console.log (line);
+
+		L.polyline(line, {
+		  color: 'red',
+		  weight: 100,
+		}).addTo(myMap);
 	}
 
 	faultLayer.addTo(myMap)
-
 })
